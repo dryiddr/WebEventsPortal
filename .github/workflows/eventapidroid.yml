@@ -8,7 +8,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: .\publish
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 6.0.x
-  WORKING_DIRECTORY: WebEventsPortal/API
+  WORKING_DIRECTORY: API
 jobs:
   build:
     runs-on: windows-latest
@@ -44,5 +44,5 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.eventapidroid_FE38 }}
+        publish-profile: ${{ secrets.eventapidroid_BC5E }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
