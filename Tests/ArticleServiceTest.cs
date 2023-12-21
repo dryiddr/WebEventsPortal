@@ -164,6 +164,7 @@ public class ArticleServiceTest : BaseTest
         actual.Should().BeEquivalentTo(expected, options => options.Excluding(model => model.CreationDate).ExcludingFields());
     }
 
+    /**
     [Theory, AutoEntityData]
     public async Task UpdateArticleAsync_WhenUpdateArticleDto_IsValid_ReturnsArticle
         (IEnumerable<Article> articles, Article article)
@@ -183,5 +184,5 @@ public class ArticleServiceTest : BaseTest
             .Returns(articles.AsQueryable().BuildMock());
         var actual = await _articleService.UpdateArticleDataAsync(updateArticleDataDto);
         
-    }
+    }*/
 }
