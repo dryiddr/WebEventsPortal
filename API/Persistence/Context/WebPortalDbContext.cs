@@ -38,4 +38,9 @@ public class WebPortalDbContext : DbContext
         
         modelBuilder.Seed();
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.LogTo(Console.WriteLine);
+    }
 }

@@ -1,57 +1,77 @@
+using Domain.User;
+using Persistence.Infrastructure;
+using Services.Interfaces;
+using Azure.Storage.Blobs;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Domain.User;
 using Persistence.Infrastructure;
 using Services.Interfaces;
 
-namespace Services.Implementation;
-
-public class ImageService : IImageService
+namespace Services.Implementation
 {
-    private readonly IRepository<User> _userRepository;
-    private readonly IWebHostEnvironment _environment;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-    private const string PathToAvatars = "/../../Avatars/";
-    private const string CurrentUrlToEndpoint = "https://localhost:7150/api/Image/";
-    public ImageService(IRepository<User> userRepository, IWebHostEnvironment environment, IWebHostEnvironment webHostEnvironment)
+    public class ImageService : IImageService
     {
-        _userRepository = userRepository;
-        _environment = environment;
-        _webHostEnvironment = webHostEnvironment;
-    }
+        private readonly IRepository<User> _userRepository;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public async Task<FileStream?> GetImageByUserId(Guid id)
-    {
-        var user = await _userRepository.GetByIdAsync(id);
-        var path = _environment.WebRootPath + PathToAvatars + user.Id;
-        var file = File.Open(path, FileMode.Open);
-        return file;
-    }
+        private const string CurrentUrlToEndpoint = "https://avatarstoredroid.blob.core.windows.net/avatars";
 
-    public async Task SetAvatar(User user, IFormFile avatar)
-    {
-        if (avatar.Length <= 0)
+        public ImageService(IRepository<User> userRepository, IWebHostEnvironment environment, IWebHostEnvironment webHostEnvironment)
         {
-            throw new IOException(nameof(avatar));
+            _userRepository = userRepository;
+            _environment = environment;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        
-        var path = $"{_webHostEnvironment}{PathToAvatars}{user.Id}";
-        try
+        private async Task<BlobContainerClient> GetCloudBlobContainer()
         {
-            await using var fileStream = new FileStream(path, FileMode.Create);
-            await avatar.CopyToAsync(fileStream);
+            BlobServiceClient serviceClient = new BlobServiceClient("DefaultEndpointsProtocol=https;AccountName=avatarstoredroid;AccountKey=FfFGbJmGL04qbow1LGgO1fvjK53umuUrTY+cR0/FzrCzwdEufhxx6IJtkgZVU5S2Eu2tcLfiMuT++AStOylkgg==;EndpointSuffix=core.windows.net");
+            BlobContainerClient containerClient = serviceClient.GetBlobContainerClient("avatars");
+            await containerClient.CreateIfNotExistsAsync();
+            return containerClient;
+        }
+
+        public async Task<FileStream?> GetImageByUserId(Guid id)
+        {
+
+            BlobContainerClient containerClient = await GetCloudBlobContainer();
+
+            var user = await _userRepository.GetByIdAsync(id);
+            var blobReference = containerClient.GetBlobClient($"{user.Id}.jpg");
+
+            var memoryStream = new MemoryStream();
+            await blobReference.DownloadToAsync(memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            var tempFilePath = Path.GetTempFileName();
+            File.WriteAllBytes(tempFilePath, memoryStream.ToArray());
+
+            var fileStream = new FileStream(tempFilePath, FileMode.Open);
+
+            return fileStream;
+        }
+
+        public async Task SetAvatar(User user, IFormFile avatar)
+        {
+            if (avatar == null || avatar.Length <= 0)
+            {
+                throw new IOException(nameof(avatar));
+            }
+
+            BlobContainerClient containerClient = await GetCloudBlobContainer();
+
+            var blobReference = containerClient.GetBlobClient($"{user.Id}.jpg");
+
+            await blobReference.UploadAsync(avatar.OpenReadStream(), true);
+
             user.Avatar = CurrentUrlToEndpoint + user.Id.ToString();
         }
-        catch (IOException e)
-        {
-            Console.WriteLine(e);
-            throw new IOException(nameof(avatar));
-        }
-    }
 
-    public void ValidateImage(IFormFile avatar)
-    {
-        
+        public void ValidateImage(IFormFile avatar)
+        {
+        }
     }
 }

@@ -28,6 +28,8 @@ builder.Services.AddCors(options =>
             .AllowAnyOrigin();
     });
 });
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddServiceProfiler();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

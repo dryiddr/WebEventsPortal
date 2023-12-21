@@ -7,7 +7,7 @@ public class AuthOptions
 {
     public const string ISSUER = "WebPortal";
     public const string AUDIENCE = "WebPortal"; 
-    const string KEY = "mysupersecret_secretkey!123";   
+    const string KEY = "mysupersecret_secretkey!1234567890123456";   
     public const int LIFETIME = 10;
     public const string UserRole = "user";
     public const string AdminRole = "admin";
