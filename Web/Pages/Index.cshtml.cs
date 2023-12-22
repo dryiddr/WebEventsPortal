@@ -58,6 +58,8 @@ namespace Web.Pages
                 {
                     IsAuthenticated = true;
                     UserInfo = JsonConvert.DeserializeObject<UserInfoObj>(userJson);
+
+                    UserInfo.Avatar = $"https://avatarstoredroid.blob.core.windows.net/avatars/{UserInfo.Id}.jpg";
                 }
             }
             catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
