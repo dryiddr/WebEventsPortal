@@ -2,56 +2,180 @@
 @namespace Web.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model IndexModel
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Contoso Photo Gallery</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+
+    <!-- Include styles -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: right;
+        }
+
+            header img {
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+
+        main {
+            padding: 20px;
+        }
+
+        .event-card {
+            border: 1px solid #ccc;
+            margin: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
-<body class="bg-dark text-light">
-    <nav class="navbar navbar-dark bg-dark">
-        <span class="navbar-brand mb-0 h1">Contoso Photo Gallery</span>
-    </nav>
-    <div class="mx-5 mb-5">
-        <div class="card">
-            <div class="card-header text-dark">
-                Upload a new image
-            </div>
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" asp-for="Upload">
-                        <label class="custom-file-label">Choose image</label>
-                    </div>
-                    <button type="submit" class="btn btn-secondary">Upload</button>
-                </form>
-            </div>
-        </div>
-        <h1 class="display-1">
-            Images
-        </h1>
-        @if (Model.ImageList.Count > 0)
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <!-- If the user is not authenticated -->
+        @if (!Model.IsAuthenticated)
         {
-            <div class="card-columns">
-                @foreach (string imageUrl in Model.ImageList)
-                {
-                    <div class="card">
-                        <img src="@imageUrl" class="img-fluid" />
-                    </div>
-                }
+            <div id="unauthenticated-header">
+                <button class="btn btn-primary" onclick="openLoginForm()">Log In</button>
             </div>
         }
         else
         {
-            <div class="alert alert-warning" role="alert">
-                No Images Found
+            <div id="authenticated-header">
+                <!-- User's photo -->
+                <img src="@Model.UserInfo?.Avatar" alt="User Avatar" width="50" height="50" style="border-radius: 50%;">
+
+                <!-- Header buttons -->
+                <button class="btn btn-primary" onclick="openSearch()">Search</button>
+                <button class="btn btn-primary" onclick="openCreateEventForm()">Create Event</button>
+                <button class="btn btn-primary" onclick="openMyEvents()">My Events</button>
+                <button class="btn btn-primary" onclick="openAllEvents()">All Events</button>
+                <button class="btn btn-primary" onclick="openRecommendedEvents()">Recommended</button>
             </div>
         }
-    </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </header>
+
+    <div class="container mt-2">
+        <!-- Reduced top margin to mt-2 -->
+        <div class="row">
+            <!-- Display weather information for Paris -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <p>
+                            @if (Model.ParisWeather != null)
+                            {
+                                <strong>Paris / France /</strong>
+                                @(Model.ParisWeather.weather != null && Model.ParisWeather.weather.Any() ? $"{Model.ParisWeather.weather[0].Description} /" : "N/A")
+                                <strong>Temp:</strong> @($"{Model.ParisWeather.Main?.Temp}°F")
+                                <br>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Display weather information for Kiev -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <p>
+                            @if (Model.KievWeather != null)
+                            {
+                                <strong>Kiev / Ukraine /</strong>
+                                @(Model.KievWeather.weather != null && Model.KievWeather.weather.Any() ? $"{Model.KievWeather.weather[0].Description} /" : "N/A")
+                                <strong>Temp:</strong> @($"{Model.KievWeather.Main?.Temp}°F")
+                                <br>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <main>
+        <div id="popular-events-grid" class="row">
+            @if (Model.PopularEvents != null && Model.PopularEvents.Any())
+            {
+                @foreach (var popularEvent in Model.PopularEvents)
+                {
+                        <div class="col-md-4">
+                            <div class="card event-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">@popularEvent.Name</h5>
+                                    <p class="card-text">
+                                        <strong>Likes:</strong> @popularEvent.CountLikes<br>
+                                        <strong>Rating:</strong> @popularEvent.Rating<br>
+                                        <strong>Creation Date:</strong> @popularEvent.CreationDate.ToShortDateString()<br>
+                                        <strong>Tags:</strong> @string.Join(", ", popularEvent.Tags ?? new List<string>())<br>
+                                        <strong>Views:</strong> @popularEvent.CountViews
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                }
+            }
+            else
+            {
+                <p>No popular events found.</p>
+            }
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+    <script>
+        function openLoginForm() {
+            window.location.href = '/Login';
+        }
+
+        function openSearch() {
+            // Your code
+        }
+
+        function openCreateEventForm() {
+                window.location.href = '/CreateEvent';
+        }
+
+        function openMyEvents() {
+            // Your code
+        }
+
+        function openAllEvents() {
+            // Your code
+        }
+
+        function openRecommendedEvents() {
+            // Your code
+        }
+    </script>
 </body>
+
 </html>

@@ -1,0 +1,113 @@
+﻿@page
+@namespace Web.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model RegisterModel
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form {
+            width: 300px;
+            margin-top: 20px; /* Додано відступ зверху для форми */
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .avatar-preview {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+            .avatar-preview img {
+                max-width: 100px;
+                max-height: 100px;
+                border-radius: 50%;
+                border: 1px solid #ccc;
+            }
+
+        button.btn-primary {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <form method="post" enctype="multipart/form-data">
+        <!-- Змінено внутрішню структуру форми для кращого відображення на сторінці -->
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="nickName">NickName:</label>
+            <input type="text" class="form-control" id="nickName" name="nickName" required>
+        </div>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="avatar">Avatar:</label>
+            <input type="file" class="form-control-file" id="avatar" name="avatar" accept="image/*" onchange="previewAvatar(this)">
+        </div>
+        <div class="avatar-preview" id="avatar-preview">
+            <!-- Avatar preview will be displayed here -->
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="error-message">
+                @Model.ErrorMessage
+            </div>
+        }
+    </form>
+
+    <script>
+        function previewAvatar(input) {
+            var preview = document.getElementById('avatar-preview');
+            preview.innerHTML = '';
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -6,8 +6,6 @@ using Microsoft.Extensions.Hosting;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-// Auto deployment test, ignore comment.
-
 namespace Web
 {
     public class Program
@@ -33,13 +31,19 @@ namespace Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSession();
             services.AddSingleton<Options>(_configuration.Get<Options>());
             services.AddSingleton<HttpClient>(new HttpClient());
+
+            // Add support for IHttpContextAccessor
+            services.AddHttpContextAccessor();
+
             services.AddRazorPages();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSession();
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
             app.UseRouting();

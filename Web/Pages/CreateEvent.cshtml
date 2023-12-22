@@ -1,0 +1,66 @@
+﻿@page
+@namespace Web.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model CreateEventModel
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form {
+            width: 300px;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        button.btn-primary {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <form method="post">
+        <div class="form-group">
+            <label for="eventName">Event Name:</label>
+            <input type="text" class="form-control" id="eventName" name="eventName" required>
+        </div>
+        <div class="form-group">
+            <label for="eventText">Event Text:</label>
+            <textarea class="form-control" id="eventText" name="eventText" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="tags">Tags:</label>
+            <input type="text" class="form-control" id="tags" name="tags" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Event</button>
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="error-message">
+                @Model.ErrorMessage
+            </div>
+        }
+    </form>
+</body>
+
+</html>

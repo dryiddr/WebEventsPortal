@@ -3,6 +3,12 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Pages\Index - Copy.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Pages\Index - Copy.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 </Project>
